@@ -1,5 +1,6 @@
 import { Banner } from "@/components/banner";
 import { Navbar } from "@/components/navbar";
+import Reviews from "@/components/reviews";
 import WhyChoose from "@/components/why-choose";
 
 export default function Home() {
@@ -8,6 +9,7 @@ export default function Home() {
       <Navbar />
       <Banner />
       <WhyChoose/>
+      <Reviews/>
 
     </div>
   );
