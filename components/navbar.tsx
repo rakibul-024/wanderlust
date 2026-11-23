@@ -21,7 +21,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="fixed inset-x-0 top-3 z-50 px-3 sm:px-4">
+<header className="sticky top-0 z-50 px-3 pt-3 sm:px-4">
       <div className="mx-auto w-full bg-white shadow-sm">
         <div className="relative flex items-center justify-between px-4 py-3.5 sm:px-6">
           {/* Left: primary navigation (desktop) */}

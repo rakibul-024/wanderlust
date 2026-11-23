@@ -10,7 +10,6 @@ export default function Footer() {
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    // এখানে আপনার নিউজলেটার সাবস্ক্রিপশন লজিক যুক্ত করতে পারেন
     setEmail("");
   };
 
@@ -20,7 +19,7 @@ export default function Footer() {
         {/* Top Brand Section */}
         <div className="mb-14">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight text-white mb-3">
-            Wanderlast
+            Wanderlust
           </h2>
           <p className="text-neutral-300 text-sm md:text-base">
             Your gateway to extraordinary travel experiences around the world.
@@ -149,7 +148,7 @@ export default function Footer() {
                   href="mailto:info@wandarland.com"
                   className="hover:text-white transition-colors"
                 >
-                  info@wandarland.com
+                  info@wanderlust.com
                 </a>
               </li>
             </ul>

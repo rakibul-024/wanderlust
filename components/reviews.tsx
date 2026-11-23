@@ -29,7 +29,7 @@ const reviews = [
       "Exploring Kyoto With Wanderlust Was A Dream Come True. Seamless Transfers, Authentic Tea Ceremonies, And Unmatched Hospitality Throughout.",
     name: "David Miller",
     location: "London, UK",
-    image: "/images/traveler-1.jpg.png",
+    image: "/images/traveler-3.png",
   },
 ];
 

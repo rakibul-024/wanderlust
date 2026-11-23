@@ -8,12 +8,12 @@ import WhyChoose from "@/components/why-choose";
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      <Navbar />
+    
       <Banner />
       <WhyChoose/>
       <Reviews/>
       <CTA/>
-      <Footer/>
+      
 
     </div>
   );
