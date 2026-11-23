@@ -1,4 +1,5 @@
 import { Banner } from "@/components/banner";
+import CTA from "@/components/cta";
 import { Navbar } from "@/components/navbar";
 import Reviews from "@/components/reviews";
 import WhyChoose from "@/components/why-choose";
@@ -10,6 +11,7 @@ export default function Home() {
       <Banner />
       <WhyChoose/>
       <Reviews/>
+      <CTA/>
 
     </div>
   );
