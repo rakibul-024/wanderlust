@@ -14,7 +14,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full bg-black text-white pt-16 pb-12 px-6 md:px-12">
+    <footer className="w-full bg-black text-white pt-20 pb-12 px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
         {/* Top Brand Section */}
         <div className="mb-14">

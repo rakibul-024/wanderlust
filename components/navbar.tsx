@@ -9,9 +9,10 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   { label: "Home", href: "/", active: true },
-  { label: "Destinations", href: "#destinations", active: false },
+  { label: "Destinations", href: "/destinations", active: false },
+  { label: "Add-Destinations", href: "/add-destination", active: false },
   { label: "My Bookings", href: "#bookings", active: false },
-  { label: "Admin", href: "#admin", active: false },
+  // { label: "Admin", href: "#admin", active: false },
 ];
 
 const linkStyle =
@@ -21,7 +22,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-<header className="sticky top-0 z-50 px-3 pt-3 sm:px-4">
+<header className="sticky top-0 z-50 px-3 pt-3 pd-5 sm:px-4">
       <div className="mx-auto w-full bg-white shadow-sm">
         <div className="relative flex items-center justify-between px-4 py-3.5 sm:px-6">
           {/* Left: primary navigation (desktop) */}
