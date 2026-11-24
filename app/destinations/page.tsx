@@ -148,7 +148,7 @@ const AllDestinationsPage = async () => {
 
                 {/* Book Now Action */}
                 <Link
-                  href={`/destination/${item._id || item.id}`}
+                  href={`/destinations/${item._id || item.id}`}
                   className="mt-3.5 inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wider uppercase text-cyan-600 hover:text-cyan-700 transition-colors w-fit"
                 >
                   <span>BOOK NOW</span>
