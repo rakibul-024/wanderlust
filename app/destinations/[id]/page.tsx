@@ -128,23 +128,24 @@ function DestinationContent({
   };
 
   // Handle Delete / Cancel (DELETE request)
-  const handleDelete = async () => {
-    setActionLoading(true);
-    try {
-      const res = await fetch(`http://localhost:5000/destination/${id}`, {
-        method: "DELETE",
-      });
+ const handleDelete = async () => {
+  setActionLoading(true);
+  try {
+    const res = await fetch(`http://localhost:5000/destination/${id}`, {
+      method: "DELETE",
+    });
+    const data = await res.json();
 
-      if (res.ok) {
-        setOpenCancel(false);
-        router.push("/destinations");
-      }
-    } catch (error) {
-      console.error("Failed to delete destination:", error);
-    } finally {
-      setActionLoading(false);
+    if (res.ok && data.deletedCount > 0) {
+      setOpenCancel(false);
+      router.push("/destinations");
     }
-  };
+  } catch (error) {
+    console.error("Failed to delete destination:", error);
+  } finally {
+    setActionLoading(false);
+  }
+};
 
   // Show loading state
   if (pageLoading) {
