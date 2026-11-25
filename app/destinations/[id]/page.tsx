@@ -4,6 +4,7 @@ import React, { useEffect, useState, use, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowRight,
   Calendar,
@@ -66,6 +67,7 @@ function DestinationContent({
   // Dialog open/close & action loading states
   const [openEdit, setOpenEdit] = useState(false);
   const [openCancel, setOpenCancel] = useState(false);
+  const [confirmStep, setConfirmStep] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
   // Form state for Edit Dialog
@@ -127,25 +129,26 @@ function DestinationContent({
     }
   };
 
-  // Handle Delete / Cancel (DELETE request)
- const handleDelete = async () => {
-  setActionLoading(true);
-  try {
-    const res = await fetch(`http://localhost:5000/destination/${id}`, {
-      method: "DELETE",
-    });
-    const data = await res.json();
+  // Handle Delete (DELETE request)
+  const handleDelete = async () => {
+    setActionLoading(true);
+    try {
+      const res = await fetch(`http://localhost:5000/destination/${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
 
-    if (res.ok && data.deletedCount > 0) {
-      setOpenCancel(false);
-      router.push("/destinations");
+      if (res.ok && data.deletedCount > 0) {
+        setOpenCancel(false);
+        setConfirmStep(false);
+        router.push("/destinations");
+      }
+    } catch (error) {
+      console.error("Failed to delete destination:", error);
+    } finally {
+      setActionLoading(false);
     }
-  } catch (error) {
-    console.error("Failed to delete destination:", error);
-  } finally {
-    setActionLoading(false);
-  }
-};
+  };
 
   // Show loading state
   if (pageLoading) {
@@ -175,7 +178,7 @@ function DestinationContent({
 
   return (
     <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 bg-white text-neutral-900">
-      {/* Top Bar: Back Link & Edit/Cancel Dialog Buttons */}
+      {/* Top Bar: Back Link & Edit/Delete Dialog Buttons */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <Link
           href="/destinations"
@@ -188,12 +191,7 @@ function DestinationContent({
         <div className="flex items-center gap-3">
           {/* ================= EDIT DIALOG ================= */}
           <Dialog open={openEdit} onOpenChange={setOpenEdit}>
-            <DialogTrigger
-              render={
-              
-                <EditDestinationPage></EditDestinationPage>
-              }
-            />
+            <DialogTrigger render={<EditDestinationPage></EditDestinationPage>} />
 
             <DialogContent className="sm:max-w-lg bg-white">
               <DialogHeader>
@@ -326,8 +324,14 @@ function DestinationContent({
             </DialogContent>
           </Dialog>
 
-          {/* ================= CANCEL / DELETE DIALOG ================= */}
-          <Dialog open={openCancel} onOpenChange={setOpenCancel}>
+          {/* ================= DELETE TRAVEL PACKAGE DIALOG ================= */}
+          <Dialog
+            open={openCancel}
+            onOpenChange={(isOpen) => {
+              setOpenCancel(isOpen);
+              if (!isOpen) setConfirmStep(false);
+            }}
+          >
             <DialogTrigger
               render={
                 <button
@@ -335,45 +339,104 @@ function DestinationContent({
                   className="inline-flex items-center gap-2 border border-red-300 bg-white px-4 py-2 text-xs font-medium text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5 text-red-500" />
-                  <span>Cancel</span>
+                  <span>Delete</span>
                 </button>
               }
             />
 
-            <DialogContent className="sm:max-w-md bg-white">
-              <DialogHeader>
-                <DialogTitle className="font-serif text-xl font-normal text-neutral-900">
-                  Cancel Destination?
-                </DialogTitle>
-                <DialogDescription className="text-xs text-neutral-600 pt-1">
-                  Are you sure you want to remove{" "}
-                  <span className="font-semibold text-neutral-900">
-                    {item.destinationName}
-                  </span>
-                  ? This action cannot be undone.
-                </DialogDescription>
-              </DialogHeader>
+            <DialogContent className="sm:max-w-[540px] bg-white p-8 rounded-none border border-neutral-200 shadow-lg">
+              {!confirmStep ? (
+                /* ---------- STEP 1: স্ক্রিনশট অনুযায়ী প্রথম মডাল ---------- */
+                <div>
+                  <DialogHeader className="text-left space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                        <AlertTriangle className="w-6 h-6 text-red-500" />
+                      </div>
+                      <DialogTitle className="font-serif text-2xl font-normal text-neutral-900">
+                        Delete Travel Package
+                      </DialogTitle>
+                    </div>
 
-              <DialogFooter className="pt-4 gap-2">
-                <DialogClose
-                  render={
+                    <DialogDescription className="text-[15px] text-neutral-600 leading-relaxed pt-1">
+                      Are you sure you want to delete{" "}
+                      <span className="font-semibold text-neutral-900">
+                        &ldquo;{item.destinationName}&rdquo;
+                      </span>
+                      ? This action cannot be undone and will permanently remove
+                      this travel package from the system.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <DialogFooter className="mt-8 flex flex-row justify-end items-center gap-3">
+                    <DialogClose
+                      render={
+                        <button
+                          type="button"
+                          className="px-6 py-2.5 text-sm border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 transition-colors cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      }
+                    />
                     <button
                       type="button"
-                      className="px-4 py-2 text-xs border border-neutral-300 text-neutral-700 hover:bg-neutral-50 cursor-pointer"
+                      onClick={() => setConfirmStep(true)}
+                      className="inline-flex items-center gap-2 px-6 py-2.5 text-sm bg-[#E5484D] hover:bg-[#d63b40] text-white font-medium transition-colors cursor-pointer"
                     >
-                      Keep It
+                      <Trash2 className="w-4 h-4" />
+                      <span>Delete Package</span>
                     </button>
-                  }
-                />
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  disabled={actionLoading}
-                  className="px-5 py-2 text-xs bg-red-600 hover:bg-red-700 text-white font-medium cursor-pointer disabled:opacity-50"
-                >
-                  {actionLoading ? "Deleting..." : "Yes, Cancel"}
-                </button>
-              </DialogFooter>
+                  </DialogFooter>
+                </div>
+              ) : (
+                /* ---------- STEP 2: দ্বিতীয়বার কনফার্মেশন চাওয়ার অংশ ---------- */
+                <div>
+                  <DialogHeader className="text-left space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                        <AlertTriangle className="w-6 h-6 text-red-600" />
+                      </div>
+                      <DialogTitle className="font-serif text-2xl font-normal text-red-600">
+                        Are You Sure?
+                      </DialogTitle>
+                    </div>
+
+                    <DialogDescription className="text-[15px] text-neutral-700 leading-relaxed pt-1">
+                      Please confirm one more time: Do you really want to
+                      permanently delete{" "}
+                      <span className="font-semibold text-neutral-900">
+                        &ldquo;{item.destinationName}&rdquo;
+                      </span>
+                      ? You won&apos;t be able to recover this package later.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <DialogFooter className="mt-8 flex flex-row justify-end items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setConfirmStep(false)}
+                      disabled={actionLoading}
+                      className="px-6 py-2.5 text-sm border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      Go Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDelete}
+                      disabled={actionLoading}
+                      className="inline-flex items-center gap-2 px-6 py-2.5 text-sm bg-red-700 hover:bg-red-800 text-white font-medium transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>
+                        {actionLoading
+                          ? "Deleting..."
+                          : "Yes, Confirm Delete"}
+                      </span>
+                    </button>
+                  </DialogFooter>
+                </div>
+              )}
             </DialogContent>
           </Dialog>
         </div>
