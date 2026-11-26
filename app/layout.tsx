@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Urbanist } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import Footer from "@/components/footer";
@@ -36,8 +37,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${urbanist.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        
-        <Navbar></Navbar>
+        {/* Navbar reads the pathname for active links, which can't be resolved
+            while prerendering dynamic routes — Suspense keeps the shell static. */}
+        <Suspense fallback={<div className="h-[72px]" aria-hidden="true" />}>
+          <Navbar />
+        </Suspense>
         {children}
         <Footer></Footer>
 

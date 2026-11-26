@@ -32,5 +32,5 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Fonts
 
 - Body/UI: Geist (`--font-geist-sans` → `--font-sans`); code: Geist Mono.
-- Headings: `app/fonts/UtileDisplay-Black-TRIAL.otf`, loaded via `next/font/local` in `app/layout.tsx` as `--font-utile-display`. `--font-heading` and `--font-display` map to it, and `h1`–`h6` apply it automatically.
-- That Utile file is a personal-use trial with only the 900/Black weight and ~72 glyphs (no accents, apostrophes, or ligatures). Keep it to short headings, not body text, and replace it with licensed files before shipping.
+- Headings: Urbanist (300/400/500, `next/font/google`) in `app/layout.tsx`, exposed as the `--font-utile-display` variable. `--font-heading` and `--font-display` map to it, and `h1`–`h6` apply it automatically via `app/globals.css`.
+- `app/fonts/UtileDisplay-Black-TRIAL.otf` is no longer loaded by anything (it was the previous heading font). Keep it out of body text; delete it or re-wire it with `next/font/local` before shipping.

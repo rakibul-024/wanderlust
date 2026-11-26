@@ -52,7 +52,10 @@ const EditDestinationPage = () => {
           console.error(`GET Error (${res.status}):`, await res.text());
           return;
         }
-        const data: Destination = await res.json();
+        // Unknown IDs come back as 200 with an empty body — only parse when there is content.
+        const raw = await res.text();
+        if (!raw) return;
+        const data: Destination = JSON.parse(raw);
         setForm(data);
       } catch (error) {
         console.error("Failed to fetch destination:", error);

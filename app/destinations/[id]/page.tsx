@@ -50,6 +50,7 @@ interface DestinationItem {
   imageUrl: string;
   rating?: string | number;
   description: string;
+  departureDate?: string;
 }
 
 // Step 1: Main Destination Details & Dialog Actions Component
@@ -70,6 +71,10 @@ function DestinationContent({
   const [confirmStep, setConfirmStep] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
+  // Booking form state
+  const [travelDate, setTravelDate] = useState("");
+  const [bookingState, setBookingState] = useState<"idle" | "loading" | "error">("idle");
+
   // Form state for Edit Dialog
   const [formData, setFormData] = useState({
     destinationName: "",
@@ -86,8 +91,13 @@ function DestinationContent({
       try {
         const res = await fetch(`http://localhost:5000/destination/${id}`);
         if (res.ok) {
-          const data = await res.json();
+          // The backend answers 200 with an empty body for unknown IDs,
+          // so read the text first and only parse when there is content.
+          const raw = await res.text();
+          if (!raw) return;
+          const data = JSON.parse(raw);
           setItem(data);
+          setTravelDate(data?.departureDate || "2026-05-15");
           setFormData({
             destinationName: data?.destinationName || "",
             country: data?.country || "",
@@ -147,6 +157,32 @@ function DestinationContent({
       console.error("Failed to delete destination:", error);
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  // Handle Book Now (create a booking, then go to My Bookings)
+  const handleBookNow = async () => {
+    if (!item || bookingState === "loading") return;
+    setBookingState("loading");
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          destinationId: item._id,
+          destinationName: item.destinationName,
+          country: item.country,
+          price: Number(item.price) || 0,
+          duration: Number(item.duration) || 0,
+          imageUrl: item.imageUrl,
+          travelDate: travelDate || item.departureDate || "",
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to create booking");
+      router.push("/my-bookings");
+    } catch (error) {
+      console.error("Failed to create booking:", error);
+      setBookingState("error");
     }
   };
 
@@ -523,18 +559,28 @@ function DestinationContent({
             {/* Date Picker */}
             <input
               type="date"
-              defaultValue="2026-05-15"
+              value={travelDate}
+              onChange={(event) => setTravelDate(event.target.value)}
               className="mt-6 w-full bg-[#F5F5F5] px-4 py-3 text-sm text-neutral-800 focus:outline-none"
             />
 
-            {/* Book Now Link */}
-            <Link
-              href={`/my-booking/${item._id}`}
-              className="mt-4 w-full bg-[#0097B2] hover:bg-[#008299] text-white py-3.5 px-6 text-xs md:text-sm font-medium flex items-center justify-center gap-2"
+            {/* Book Now Action */}
+            <button
+              type="button"
+              onClick={handleBookNow}
+              disabled={bookingState === "loading"}
+              className="mt-4 flex w-full items-center justify-center gap-2 bg-[#0097B2] px-6 py-3.5 text-xs font-medium text-white transition-colors hover:bg-[#008299] disabled:cursor-not-allowed disabled:opacity-60 md:text-sm"
             >
-              <span>Book Now</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+              <span>
+                {bookingState === "loading" ? "Booking..." : "Book Now"}
+              </span>
+              {bookingState !== "loading" && <ArrowRight className="w-4 h-4" />}
+            </button>
+            {bookingState === "error" && (
+              <p className="mt-2 text-xs font-medium text-red-600">
+                Couldn&apos;t create your booking. Please try again.
+              </p>
+            )}
 
             {/* Included Perks */}
             <ul className="mt-6 space-y-2.5 text-xs text-neutral-600">
