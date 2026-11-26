@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { Binary } from "mongodb";
 import { auth } from "@/auth";
 import { db } from "@/lib/mongodb";
 
@@ -12,7 +13,7 @@ type PhotoContentType = "image/jpeg" | "image/png" | "image/webp";
 interface ProfilePhoto {
   _id: string;
   contentType: PhotoContentType;
-  data: Buffer;
+  data: Buffer | Binary;
   updatedAt: Date;
 }
 
@@ -66,11 +67,13 @@ export async function GET(request: Request) {
     });
   }
 
-  return new Response(new Uint8Array(photo.data), {
+  const imageData = photo.data instanceof Binary ? photo.data.value() : photo.data;
+
+  return new Response(new Uint8Array(imageData), {
     headers: {
       ...headersForPhoto,
       "Content-Type": photo.contentType,
-      "Content-Length": String(photo.data.length),
+      "Content-Length": String(imageData.byteLength),
     },
   });
 }
