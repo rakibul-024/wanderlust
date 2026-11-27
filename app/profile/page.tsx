@@ -140,7 +140,7 @@ export default function ProfilePage() {
           </p>
           <div className="mt-6 flex flex-col gap-3">
             <Link
-              href="/login"
+              href="/login?from=%2Fprofile"
               className="rounded-lg bg-[#0097B2] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#008299]"
             >
               Sign In

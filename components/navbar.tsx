@@ -11,7 +11,7 @@ import { cn } from "cn";
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Destinations", href: "/destinations" },
-  { label: "Ad Destinations", href: "/add-destination" },
+  { label: "Add Destinations", href: "/add-destination" },
   { label: "My Bookings", href: "/my-bookings" },
 ];
 

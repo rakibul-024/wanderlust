@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SocialButtons } from "@/components/social-buttons";
 import { authClient } from "@/lib/auth-client";
+import { usePostLoginPath } from "@/lib/post-login-redirect";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -18,6 +19,8 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  // Where to go after signing up (set by proxy.ts via ?from=).
+  const returnTo = usePostLoginPath();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +45,7 @@ export default function SignupPage() {
       return;
     }
 
-    router.push("/my-bookings");
+    router.push(returnTo);
   };
 
   return (
@@ -179,11 +182,14 @@ export default function SignupPage() {
             <span className="h-px flex-1 bg-neutral-200" />
           </div>
 
-          <SocialButtons />
+          <SocialButtons callbackURL={returnTo} />
 
           <p className="mt-6 text-center text-sm text-neutral-500">
             Already have an account?{" "}
-            <Link href="/login" className="font-semibold text-[#0097B2] hover:underline">
+            <Link
+              href={`/login${returnTo !== "/my-bookings" ? `?from=${encodeURIComponent(returnTo)}` : ""}`}
+              className="font-semibold text-[#0097B2] hover:underline"
+            >
               Sign in
             </Link>
           </p>
